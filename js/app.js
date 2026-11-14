@@ -3,9 +3,11 @@
 import { activeProfile } from "./config.js";
 import { normalize } from "./normalize.js";
 import { normalizeRange, venueCounts, venueListing, countInRange } from "./filter.js";
+import { fetchAll, timeoutFetch } from "./queries.js";
 
 const COLOR_ACTIVE = "#c2410c";
 const COLOR_IDLE = "#9ca3af";
+const LIVE_TIMEOUT_MS = 60_000;
 
 const $ = (id) => document.getElementById(id);
 
@@ -78,7 +80,7 @@ function exhibitionItem(ex) {
     "li",
     {},
     when ? el("time", {}, when) : null,
-    el("a", { href: activeProfile.itemUrl(ex.id), target: "_blank", rel: "noopener" }, ex.title),
+    el("a", { href: activeProfile.itemUrl(ex.id), target: "_blank", rel: "noopener noreferrer" }, ex.title),
     langTag(ex.titleLang),
   );
 }
@@ -91,7 +93,7 @@ function renderPanel(venueId) {
   const outside = venue.exhibitionIds.length - inRange.length - undated.length;
   const body = $("panel-body");
   body.replaceChildren(
-    el("h2", {}, el("a", { href: activeProfile.itemUrl(venue.id), target: "_blank", rel: "noopener" }, venue.name)),
+    el("h2", {}, el("a", { href: activeProfile.itemUrl(venue.id), target: "_blank", rel: "noopener noreferrer" }, venue.name)),
     el("p", { className: "muted" }, `${venue.exhibitionIds.length} exhibitions in total, ${outside} outside ${from}–${to}`),
     el("h3", {}, `${from}–${to} (${inRange.length})`),
     el("ul", {}, ...inRange.map(exhibitionItem)),
@@ -162,7 +164,28 @@ $("slider-from").addEventListener("input", onSlide);
 $("slider-to").addEventListener("input", onSlide);
 $("panel-close").addEventListener("click", closePanel);
 
-window.exhibitionMap = { setData, normalize };
+async function fetchLive() {
+  const button = $("fetch-live");
+  const status = $("fetch-status");
+  button.disabled = true;
+  status.className = "status";
+  status.textContent = "Fetching…";
+  try {
+    const responses = await fetchAll(activeProfile, timeoutFetch(LIVE_TIMEOUT_MS));
+    const model = normalize(responses, activeProfile);
+    setData(model, { fetchedAt: new Date().toISOString(), endpoint: activeProfile.endpoint, source: "live" });
+    status.textContent = "";
+  } catch (err) {
+    status.className = "status error";
+    status.textContent = `Fetch failed: ${err.message}`;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("fetch-live").addEventListener("click", fetchLive);
+
+window.exhibitionMap = { setData, normalize, profile: activeProfile };
 
 const snapshot = await (await fetch("data/snapshot.json")).json();
 setData(normalize(snapshot.responses, activeProfile), {

@@ -7,7 +7,7 @@ export const profiles = {
     endpoint: "https://qlever.dev/api/wikidata",
     entityPrefix: "http://www.wikidata.org/entity/",
     directPropPrefix: "http://www.wikidata.org/prop/direct/",
-    itemUrl: (id) => `https://www.wikidata.org/wiki/${id}`,
+    itemUrl: (id) => `https://www.wikidata.org/wiki/${encodeURIComponent(id)}`,
     classExhibition: "Q464980",
     country: "Q39",
     props: {

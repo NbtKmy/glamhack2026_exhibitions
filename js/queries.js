@@ -61,9 +61,25 @@ export async function runQuery(profile, sparql, fetchFn = fetch) {
   return res.json();
 }
 
+// Sequential on purpose: QLever answers parallel requests from one client
+// with 429 Too Many Requests.
 export async function fetchAll(profile, fetchFn = fetch) {
-  const queries = buildQueries(profile);
-  const names = Object.keys(queries);
-  const results = await Promise.all(names.map((n) => runQuery(profile, queries[n], fetchFn)));
-  return Object.fromEntries(names.map((n, i) => [n, results[i]]));
+  const results = {};
+  for (const [name, sparql] of Object.entries(buildQueries(profile))) {
+    results[name] = await runQuery(profile, sparql, fetchFn);
+  }
+  return results;
+}
+
+// Wraps a fetch function so each request is aborted after `ms` milliseconds.
+export function timeoutFetch(ms, fetchFn = fetch) {
+  return async (url, init = {}) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(new Error(`Request timed out after ${ms / 1000} s`)), ms);
+    try {
+      return await fetchFn(url, { ...init, signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  };
 }
