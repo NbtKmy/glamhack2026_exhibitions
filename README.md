@@ -48,6 +48,15 @@ it. Fields to set: `endpoint`, `entityPrefix`, `directPropPrefix`, `itemUrl`,
 `classExhibition`, `country`, the property IDs in `props`, and
 `labelLanguages`. Then run `npm run snapshot`.
 
+The page sets a Content Security Policy in `index.html` (GitHub Pages cannot
+send headers). Add the new SPARQL endpoint's origin to `connect-src` there,
+or the live fetch will be blocked. Leaflet is loaded from cdnjs with
+Subresource Integrity hashes.
+
+Note: dev servers that inject an inline live-reload script (e.g. VS Code
+Live Server) are blocked by the policy; the page still works, only
+auto-reload does not.
+
 ## Licence of the data
 
 Wikidata content is available under CC0. Map tiles © OpenStreetMap

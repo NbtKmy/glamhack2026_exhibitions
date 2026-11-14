@@ -82,3 +82,8 @@ test("timeoutFetch also times out a response body that never arrives", async () 
   const stalled = async () => ({ ok: true, json: () => new Promise(() => {}) });
   await assert.rejects(runQuery(activeProfile, "SELECT * WHERE {}", timeoutFetch(20, stalled)), /timed out/);
 });
+
+test("runQuery explains a 429 rate limit", async () => {
+  const fetchFn = async () => ({ ok: false, status: 429, statusText: "Too Many Requests" });
+  await assert.rejects(runQuery(activeProfile, "SELECT * WHERE {}", fetchFn), /rate-limit.*try again in a minute/i);
+});

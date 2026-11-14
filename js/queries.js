@@ -57,6 +57,9 @@ export async function runQuery(profile, sparql, fetchFn = fetch) {
     },
     body: new URLSearchParams({ query: sparql }).toString(),
   });
+  if (res.status === 429) {
+    throw new Error("the endpoint is rate-limiting requests (429), try again in a minute");
+  }
   if (!res.ok) throw new Error(`SPARQL request failed: ${res.status} ${res.statusText}`);
   return res.json();
 }
