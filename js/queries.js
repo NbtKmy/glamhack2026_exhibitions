@@ -71,15 +71,31 @@ export async function fetchAll(profile, fetchFn = fetch) {
   return results;
 }
 
-// Wraps a fetch function so each request is aborted after `ms` milliseconds.
+// Wraps a fetch function so each request, including reading its JSON body,
+// fails after `ms` milliseconds.
 export function timeoutFetch(ms, fetchFn = fetch) {
   return async (url, init = {}) => {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(new Error(`Request timed out after ${ms / 1000} s`)), ms);
+    let timer;
+    const timedOut = new Promise((_, reject) => {
+      timer = setTimeout(() => {
+        const err = new Error(`Request timed out after ${ms / 1000} s`);
+        controller.abort(err);
+        reject(err);
+      }, ms);
+    });
+    timedOut.catch(() => {});
     try {
-      return await fetchFn(url, { ...init, signal: controller.signal });
-    } finally {
+      const res = await Promise.race([fetchFn(url, { ...init, signal: controller.signal }), timedOut]);
+      return {
+        ok: res.ok,
+        status: res.status,
+        statusText: res.statusText,
+        json: () => Promise.race([res.json(), timedOut]).finally(() => clearTimeout(timer)),
+      };
+    } catch (err) {
       clearTimeout(timer);
+      throw err;
     }
   };
 }

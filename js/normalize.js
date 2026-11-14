@@ -80,6 +80,7 @@ export function normalize(responses, profile) {
     if (!start) start = earliest(e.pits);
     if (!start) start = end;
     if (!end) end = latest(e.pits) ?? start;
+    if (start && end && end.key < start.key) [start, end] = [end, start];
     const label = pickLabel(e.labels, profile.labelLanguages);
     const venueIds = [...e.venueIds];
     for (const vId of venueIds) getVenue(vId).exhibitionIds.push(exId);
@@ -115,7 +116,7 @@ export function normalize(responses, profile) {
     noEnglishLabel: exhibitions.filter((e) => !e.hasEnglishLabel).length,
     noVenue: exhibitions.filter((e) => e.venueIds.length === 0).length,
     venuesNoCoord: venues.length - mapped.size,
-    exhibitionsOffMap: exhibitions.filter((e) => !e.venueIds.some((v) => mapped.has(v))).length,
+    exhibitionsOffMap: exhibitions.filter((e) => e.venueIds.length > 0 && !e.venueIds.some((v) => mapped.has(v))).length,
   };
 
   const dated = exhibitions.filter((e) => e.startYear !== null);

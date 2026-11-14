@@ -55,8 +55,10 @@ test("timeoutFetch aborts a request that takes too long", async () => {
 
 test("timeoutFetch passes through a fast response", async () => {
   const { timeoutFetch } = await import("../js/queries.js");
-  const fast = async () => ({ ok: true });
-  assert.deepEqual(await timeoutFetch(1000, fast)("https://example.org", {}), { ok: true });
+  const fast = async () => ({ ok: true, json: async () => ({ a: 1 }) });
+  const res = await timeoutFetch(1000, fast)("https://example.org", {});
+  assert.equal(res.ok, true);
+  assert.deepEqual(await res.json(), { a: 1 });
 });
 
 test("fetchAll sends one request at a time (QLever rate-limits parallel requests)", async () => {
@@ -73,4 +75,10 @@ test("fetchAll sends one request at a time (QLever rate-limits parallel requests
   const result = await fetchAll(activeProfile, fetchFn);
   assert.equal(maxInFlight, 1);
   assert.deepEqual(Object.keys(result).sort(), ["exhibitionLabels", "exhibitions", "venues"]);
+});
+
+test("timeoutFetch also times out a response body that never arrives", async () => {
+  const { timeoutFetch } = await import("../js/queries.js");
+  const stalled = async () => ({ ok: true, json: () => new Promise(() => {}) });
+  await assert.rejects(runQuery(activeProfile, "SELECT * WHERE {}", timeoutFetch(20, stalled)), /timed out/);
 });

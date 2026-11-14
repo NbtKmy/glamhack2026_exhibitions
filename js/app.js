@@ -123,7 +123,7 @@ function renderGaps(gaps) {
     [gaps.noEnglishLabel, "without an English label"],
     [gaps.noVenue, "without a Swiss venue"],
     [gaps.venuesNoCoord, "venues without coordinates"],
-    [gaps.exhibitionsOffMap, "exhibitions not on the map"],
+    [gaps.exhibitionsOffMap, "only at venues without coordinates"],
   ];
   $("gaps").replaceChildren(...items.map(([n, text]) => el("li", {}, el("strong", {}, n), ` ${text}`)));
 }
@@ -134,27 +134,31 @@ function renderMeta(meta) {
   $("source-meta").textContent = `${meta.source === "live" ? "Live data" : "Snapshot"} ${date} UTC · ${host}`;
 }
 
-function setupSlider(model) {
+// On a refresh the selected years are kept, clamped to the new data.
+function setupSlider(model, keepRange) {
   const [min, max] = model.yearRange;
   for (const input of [$("slider-from"), $("slider-to")]) {
     input.min = min;
     input.max = max;
     input.step = 1;
   }
-  $("slider-from").value = min;
-  $("slider-to").value = max;
-  range = [min, max];
+  const clamp = (y) => Math.min(max, Math.max(min, y));
+  range = keepRange ? normalizeRange(clamp(range[0]), clamp(range[1])) : [min, max];
+  $("slider-from").value = range[0];
+  $("slider-to").value = range[1];
 }
 
 function onSlide() {
+  if (!currentModel) return;
   range = normalizeRange(Number($("slider-from").value), Number($("slider-to").value));
   update();
 }
 
 export function setData(model, meta) {
+  const isRefresh = currentModel !== null;
   currentModel = model;
   buildMarkers(model);
-  setupSlider(model);
+  setupSlider(model, isRefresh);
   renderGaps(model.gaps);
   renderMeta(meta);
   update();
@@ -173,6 +177,7 @@ async function fetchLive() {
   try {
     const responses = await fetchAll(activeProfile, timeoutFetch(LIVE_TIMEOUT_MS));
     const model = normalize(responses, activeProfile);
+    if (model.exhibitions.length === 0) throw new Error("Endpoint returned no exhibitions");
     setData(model, { fetchedAt: new Date().toISOString(), endpoint: activeProfile.endpoint, source: "live" });
     status.textContent = "";
   } catch (err) {
@@ -187,9 +192,16 @@ $("fetch-live").addEventListener("click", fetchLive);
 
 window.exhibitionMap = { setData, normalize, profile: activeProfile };
 
-const snapshot = await (await fetch("data/snapshot.json")).json();
-setData(normalize(snapshot.responses, activeProfile), {
-  fetchedAt: snapshot.fetchedAt,
-  endpoint: snapshot.endpoint,
-  source: "snapshot",
-});
+try {
+  const res = await fetch("data/snapshot.json");
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  const snapshot = await res.json();
+  setData(normalize(snapshot.responses, activeProfile), {
+    fetchedAt: snapshot.fetchedAt,
+    endpoint: snapshot.endpoint,
+    source: "snapshot",
+  });
+} catch (err) {
+  $("fetch-status").className = "status error";
+  $("fetch-status").textContent = `Could not load the bundled snapshot (${err.message}). Try "Fetch latest data".`;
+}

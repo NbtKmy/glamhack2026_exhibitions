@@ -50,7 +50,7 @@ test("venues get coordinates and fall back to the ID as name", () => {
 
 test("gaps are counted", () => {
   assert.deepEqual(model.gaps, {
-    total: 4, noDate: 1, noEnglishLabel: 3, noVenue: 1, venuesNoCoord: 1, exhibitionsOffMap: 1,
+    total: 4, noDate: 1, noEnglishLabel: 3, noVenue: 1, venuesNoCoord: 1, exhibitionsOffMap: 0,
   });
 });
 
@@ -72,4 +72,50 @@ test("parsePoint reads WKT points in either case", () => {
 test("parsePoint rejects malformed or out-of-range numbers", () => {
   assert.equal(parsePoint("Point(1.2.3 47)"), null);
   assert.equal(parsePoint("Point(8.5 147)"), null);
+});
+
+function inline(exRows, venueRows = []) {
+  const E = activeProfile.entityPrefix;
+  const uri = (id) => ({ type: "uri", value: E + id });
+  const date = (d) => ({ type: "literal", value: `${d}T00:00:00Z` });
+  const bindings = exRows.map(({ ex, venue, start, end }) => ({
+    ex: uri(ex),
+    ...(venue && { venue: uri(venue) }),
+    ...(start && { start: date(start) }),
+    ...(end && { end: date(end) }),
+  }));
+  const venues = venueRows.map(({ venue, coord }) => ({
+    venue: uri(venue),
+    ...(coord && { coord: { type: "literal", value: coord } }),
+  }));
+  return {
+    exhibitions: { results: { bindings } },
+    exhibitionLabels: { results: { bindings: [] } },
+    venues: { results: { bindings: venues } },
+  };
+}
+
+test("an end date before the start date is swapped", () => {
+  const m = normalize(inline([{ ex: "Q6", start: "2022-10-16", end: "2020-12-19" }]), activeProfile);
+  const e = m.exhibitions[0];
+  assert.equal(e.start, "2020-12-19");
+  assert.equal(e.end, "2022-10-16");
+  assert.equal(e.startYear, 2020);
+  assert.equal(e.endYear, 2022);
+});
+
+test("exhibitionsOffMap counts exhibitions only at venues without coordinates", () => {
+  const m = normalize(
+    inline(
+      [
+        { ex: "Q5", venue: "V2", start: "2001-01-01" },
+        { ex: "Q7", venue: "V1", start: "2001-01-01" },
+        { ex: "Q8" },
+      ],
+      [{ venue: "V1", coord: "Point(8.5 47.37)" }, { venue: "V2" }],
+    ),
+    activeProfile,
+  );
+  assert.equal(m.gaps.noVenue, 1);
+  assert.equal(m.gaps.exhibitionsOffMap, 1);
 });
