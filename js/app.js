@@ -175,7 +175,11 @@ async function fetchLive() {
   status.className = "status";
   status.textContent = "Fetching…";
   try {
-    const responses = await fetchAll(activeProfile, timeoutFetch(LIVE_TIMEOUT_MS));
+    const responses = await fetchAll(activeProfile, timeoutFetch(LIVE_TIMEOUT_MS), {
+      onRetry: (ms) => {
+        status.textContent = `Endpoint busy (429), retrying in ${ms / 1000} s…`;
+      },
+    });
     const model = normalize(responses, activeProfile);
     if (model.exhibitions.length === 0) throw new Error("Endpoint returned no exhibitions");
     setData(model, { fetchedAt: new Date().toISOString(), endpoint: activeProfile.endpoint, source: "live" });

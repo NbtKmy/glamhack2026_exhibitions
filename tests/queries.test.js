@@ -83,7 +83,44 @@ test("timeoutFetch also times out a response body that never arrives", async () 
   await assert.rejects(runQuery(activeProfile, "SELECT * WHERE {}", timeoutFetch(20, stalled)), /timed out/);
 });
 
-test("runQuery explains a 429 rate limit", async () => {
-  const fetchFn = async () => ({ ok: false, status: 429, statusText: "Too Many Requests" });
-  await assert.rejects(runQuery(activeProfile, "SELECT * WHERE {}", fetchFn), /rate-limit.*try again in a minute/i);
+const noSleep = async () => {};
+
+test("runQuery explains a 429 rate limit once retries are used up", async () => {
+  let calls = 0;
+  const fetchFn = async () => (calls++, { ok: false, status: 429, statusText: "Too Many Requests" });
+  await assert.rejects(
+    runQuery(activeProfile, "SELECT * WHERE {}", fetchFn, { retryDelays: [1, 1], sleep: noSleep }),
+    /rate-limit.*try again in a minute/i,
+  );
+  assert.equal(calls, 3);
+});
+
+test("runQuery retries after a 429 and reports each wait", async () => {
+  const statuses = [429, 429, 200];
+  const slept = [];
+  const retries = [];
+  const fetchFn = async () => {
+    const status = statuses.shift();
+    return { ok: status === 200, status, json: async () => ({ results: { bindings: [] } }) };
+  };
+  const result = await runQuery(activeProfile, "SELECT * WHERE {}", fetchFn, {
+    retryDelays: [2000, 5000, 10000],
+    sleep: async (ms) => slept.push(ms),
+    onRetry: (ms) => retries.push(ms),
+  });
+  assert.deepEqual(result, { results: { bindings: [] } });
+  assert.deepEqual(slept, [2000, 5000]);
+  assert.deepEqual(retries, [2000, 5000]);
+});
+
+test("fetchAll passes retry options to every query", async () => {
+  const { fetchAll } = await import("../js/queries.js");
+  const statuses = [429, 200, 200, 200];
+  const fetchFn = async () => {
+    const status = statuses.shift();
+    return { ok: status === 200, status, json: async () => ({ results: { bindings: [] } }) };
+  };
+  const retries = [];
+  await fetchAll(activeProfile, fetchFn, { retryDelays: [3], sleep: noSleep, onRetry: (ms) => retries.push(ms) });
+  assert.deepEqual(retries, [3]);
 });

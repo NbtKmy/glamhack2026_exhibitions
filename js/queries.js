@@ -48,28 +48,41 @@ SELECT ?venue ?coord ?label WHERE {
   };
 }
 
-export async function runQuery(profile, sparql, fetchFn = fetch) {
-  const res = await fetchFn(profile.endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/sparql-results+json",
-    },
-    body: new URLSearchParams({ query: sparql }).toString(),
-  });
-  if (res.status === 429) {
-    throw new Error("the endpoint is rate-limiting requests (429), try again in a minute");
+const RETRY_DELAYS_MS = [2000, 5000, 10000];
+const sleepMs = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// QLever's public endpoint answers 429 intermittently, even for single
+// requests seconds apart, so a 429 is retried after each delay in turn.
+export async function runQuery(profile, sparql, fetchFn = fetch, options = {}) {
+  const { retryDelays = RETRY_DELAYS_MS, sleep = sleepMs, onRetry = () => {} } = options;
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetchFn(profile.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/sparql-results+json",
+      },
+      body: new URLSearchParams({ query: sparql }).toString(),
+    });
+    if (res.status === 429) {
+      if (attempt < retryDelays.length) {
+        onRetry(retryDelays[attempt]);
+        await sleep(retryDelays[attempt]);
+        continue;
+      }
+      throw new Error("the endpoint is rate-limiting requests (429), try again in a minute");
+    }
+    if (!res.ok) throw new Error(`SPARQL request failed: ${res.status} ${res.statusText}`);
+    return res.json();
   }
-  if (!res.ok) throw new Error(`SPARQL request failed: ${res.status} ${res.statusText}`);
-  return res.json();
 }
 
 // Sequential on purpose: QLever answers parallel requests from one client
 // with 429 Too Many Requests.
-export async function fetchAll(profile, fetchFn = fetch) {
+export async function fetchAll(profile, fetchFn = fetch, options = {}) {
   const results = {};
   for (const [name, sparql] of Object.entries(buildQueries(profile))) {
-    results[name] = await runQuery(profile, sparql, fetchFn);
+    results[name] = await runQuery(profile, sparql, fetchFn, options);
   }
   return results;
 }
