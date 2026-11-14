@@ -30,6 +30,8 @@ No dependencies; Node 24 is only used for tests and the snapshot script.
 ```sh
 npm test               # unit tests (node:test)
 npm run snapshot       # refresh data/snapshot.json from the endpoint
+npm run snapshot:wikibase   # refresh data/wikibase-snapshot.json
+npm run duplicates     # refresh that snapshot, then check it against Wikidata
 python3 -m http.server 8000   # then open http://localhost:8000/
 ```
 
@@ -39,6 +41,7 @@ Code layout:
 - `js/queries.js` — builds and runs the SPARQL queries (browser and Node)
 - `js/normalize.js` — raw SPARQL JSON → exhibitions, venues and gap counts
 - `js/filter.js` — year-range filtering
+- `js/duplicates.js` — title and date matching for the duplicate check
 - `js/app.js` — Leaflet map, slider, side panel, gap bar
 
 ## Using another Wikibase
@@ -56,6 +59,39 @@ Subresource Integrity hashes.
 Note: dev servers that inject an inline live-reload script (e.g. VS Code
 Live Server) are blocked by the policy; the page still works, only
 auto-reload does not.
+
+## Duplicate check for the hackathon Wikibase
+
+The hackathon Wikibase was set up by Birk Weiberg
+([birk/wikibase-exhibitions](https://github.com/birk/wikibase-exhibitions)),
+a fork of Wikibase Suite made at GLAMhack 2026 for the challenge
+"Exhibitions - Past and Present" by Museum Rietberg. It adds a stricter
+exhibition schema based on WikiProject Exhibitions and an alternative
+interface for browsing and editing exhibitions.
+
+The hackathon Wikibase's SPARQL endpoint needs a password, so
+`npm run snapshot:wikibase` reads its public MediaWiki API instead and stores
+the exhibition items in `data/wikibase-snapshot.json`. Its property IDs live
+in `wikibaseSource` in `js/config.js`, since the schema is not final.
+
+`npm run duplicates` refreshes that snapshot, takes the items without a
+Wikidata link (P69) and looks for the same exhibition, cheapest first: among
+all other Wikibase items (so two new entries for the same show find each
+other), in the map's Wikidata snapshot, then through Wikidata's search API.
+Titles (labels, aliases and P4, any language) match exactly or on the main
+title before a subtitle; dates are compared at the coarser precision.
+
+- **likely**: same title, same start (or end) date
+- **possible**: same title, one side has no date
+- **different edition**: same title, other date (annual shows, biennials)
+
+A date match without a title match is never reported. Search hits can be
+books or people with the same name; the description column helps to dismiss
+them. If a Wikidata request fails, that item gets an `error` row and the rest
+of the check still runs. Results go to
+`reports/duplicates.csv` and `reports/duplicates.json`.
+`node scripts/check-duplicates.mjs --validate 30` hides the P69 of 30 linked
+items and reports how often the matcher finds their known Wikidata item.
 
 ## Licence of the data
 

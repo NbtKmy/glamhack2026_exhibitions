@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test \"tests/*.test.js\"",
-    "snapshot": "node scripts/fetch-snapshot.mjs"
+    "snapshot": "node scripts/fetch-snapshot.mjs",
+    "snapshot:wikibase": "node scripts/fetch-wikibase-snapshot.mjs",
+    "duplicates": "npm run -s snapshot:wikibase && node scripts/check-duplicates.mjs"
   }
 }

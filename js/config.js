@@ -5,6 +5,7 @@ export const profiles = {
   wikidata: {
     name: "wikidata",
     endpoint: "https://qlever.dev/api/wikidata",
+    apiUrl: "https://www.wikidata.org/w/api.php",
     entityPrefix: "http://www.wikidata.org/entity/",
     directPropPrefix: "http://www.wikidata.org/prop/direct/",
     itemUrl: (id) => `https://www.wikidata.org/wiki/${encodeURIComponent(id)}`,
@@ -27,3 +28,21 @@ export const profiles = {
 };
 
 export const activeProfile = profiles.wikidata;
+
+// The hackathon Wikibase. Its SPARQL endpoint needs a password, so scripts read
+// the public MediaWiki API instead. The schema is not final: keep its IDs here.
+const wikibaseBase = "https://emma.zeedonk-symmetric.ts.net";
+
+export const wikibaseSource = {
+  name: "glamhack-wikibase",
+  apiUrl: `${wikibaseBase}/w/api.php`,
+  listUrl: `${wikibaseBase}/tools/exhibitions/api/list.php`,
+  itemUrl: (id) => `${wikibaseBase}/wiki/Item:${encodeURIComponent(id)}`,
+  props: {
+    instanceOf: "P2",
+    title: "P4",
+    start: "P23",
+    end: "P24",
+    wikidataItem: "P69",
+  },
+};
