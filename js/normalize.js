@@ -13,8 +13,11 @@ export function pickLabel(labels, languages) {
 }
 
 export function parsePoint(wkt) {
-  const m = /^\s*point\s*\(\s*(-?[\d.]+)\s+(-?[\d.]+)\s*\)\s*$/i.exec(wkt ?? "");
-  return m ? { lat: Number(m[2]), lon: Number(m[1]) } : null;
+  const m = /^\s*point\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)\s*$/i.exec(wkt ?? "");
+  if (!m) return null;
+  const lat = Number(m[2]);
+  const lon = Number(m[1]);
+  return Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? { lat, lon } : null;
 }
 
 // "1998-03-01T00:00:00Z" -> { date: "1998-03-01", year: 1998, key: 19980301 }

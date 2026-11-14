@@ -68,3 +68,8 @@ test("parsePoint reads WKT points in either case", () => {
   assert.deepEqual(parsePoint("POINT(6.945180 46.998837)"), { lat: 46.998837, lon: 6.94518 });
   assert.equal(parsePoint("garbage"), null);
 });
+
+test("parsePoint rejects malformed or out-of-range numbers", () => {
+  assert.equal(parsePoint("Point(1.2.3 47)"), null);
+  assert.equal(parsePoint("Point(8.5 147)"), null);
+});
