@@ -75,3 +75,47 @@ export function wikibaseExhibitions(snapshot, source) {
   }
   return result;
 }
+
+export function wikidataExhibitions(model, profile) {
+  const venueName = new Map(model.venues.map((v) => [v.id, v.name]));
+  return model.exhibitions.map((e) => ({
+    id: e.id,
+    source: "wikidata",
+    title: e.title,
+    titleLang: e.titleLang,
+    start: e.start,
+    end: e.end,
+    startYear: e.startYear,
+    endYear: e.endYear,
+    venues: e.venueIds.map((id) => venueName.get(id) ?? id),
+    url: profile.itemUrl(e.id),
+    wikidataId: e.id,
+  }));
+}
+
+// Wikidata wins: a Wikibase item linked to Wikidata is counted there or, when
+// Wikidata does not place it in Switzerland, not at all.
+export function mergeSources(wikidata, wikibase) {
+  return [...wikidata, ...wikibase.filter((e) => !e.wikidataId)];
+}
+
+const byStartThenTitle = (a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title);
+
+// Every year from the first start to the last end, empty years included.
+// An exhibition is listed in each year it was running.
+export function yearBuckets(exhibitions) {
+  const undated = { wikidata: 0, wikibase: 0 };
+  const dated = [];
+  for (const e of exhibitions) {
+    if (e.startYear === null) undated[e.source] += 1;
+    else dated.push(e);
+  }
+  if (dated.length === 0) return { years: [], undated };
+  const first = Math.min(...dated.map((e) => e.startYear));
+  const last = Math.max(...dated.map((e) => e.endYear));
+  const years = Array.from({ length: last - first + 1 }, (_, i) => ({ year: first + i, wikidata: [], wikibase: [] }));
+  for (const e of [...dated].sort(byStartThenTitle)) {
+    for (let y = e.startYear; y <= e.endYear; y++) years[y - first][e.source].push(e);
+  }
+  return { years, undated };
+}
