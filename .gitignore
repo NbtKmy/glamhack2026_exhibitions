@@ -1,2 +1,5 @@
 .playwright-mcp/
 .superpowers/
+# Test data only; remove these lines once the hackathon Wikibase holds real data.
+data/wikibase-snapshot.json
+reports/
