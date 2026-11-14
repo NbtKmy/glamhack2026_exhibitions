@@ -1,0 +1,174 @@
+{
+ "exhibitions": {
+  "head": {
+   "vars": []
+  },
+  "results": {
+   "bindings": [
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q1"
+     },
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V1"
+     },
+     "start": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "1999-05-01T00:00:00Z"
+     },
+     "end": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "1998-06-30T00:00:00Z"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q1"
+     },
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V1"
+     },
+     "start": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "1998-03-01T00:00:00Z"
+     },
+     "end": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "1998-06-30T00:00:00Z"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2"
+     },
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V1"
+     },
+     "pit": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "2005-01-01T00:00:00Z"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2"
+     },
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V2"
+     },
+     "pit": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "2005-01-01T00:00:00Z"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q3"
+     },
+     "end": {
+      "type": "literal",
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "value": "2010-12-31T00:00:00Z"
+     },
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V1"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q4"
+     }
+    }
+   ]
+  }
+ },
+ "exhibitionLabels": {
+  "head": {
+   "vars": []
+  },
+  "results": {
+   "bindings": [
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q1"
+     },
+     "label": {
+      "type": "literal",
+      "value": "Ausstellung",
+      "xml:lang": "de"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q1"
+     },
+     "label": {
+      "type": "literal",
+      "value": "Exposition",
+      "xml:lang": "fr"
+     }
+    },
+    {
+     "ex": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/Q2"
+     },
+     "label": {
+      "type": "literal",
+      "value": "Show",
+      "xml:lang": "en"
+     }
+    }
+   ]
+  }
+ },
+ "venues": {
+  "head": {
+   "vars": []
+  },
+  "results": {
+   "bindings": [
+    {
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V1"
+     },
+     "coord": {
+      "type": "literal",
+      "value": "POINT(8.5 47.37)"
+     },
+     "label": {
+      "type": "literal",
+      "value": "Kunsthaus",
+      "xml:lang": "de"
+     }
+    },
+    {
+     "venue": {
+      "type": "uri",
+      "value": "http://www.wikidata.org/entity/V2"
+     }
+    }
+   ]
+  }
+ }
+}
