@@ -4,6 +4,7 @@
 // (the list omits P33 coordinates and P69 Wikidata links).
 import { writeFile } from "node:fs/promises";
 import { wikibaseSource } from "../js/config.js";
+import { claimValues } from "../js/duplicates.js";
 
 const LIST_URL = wikibaseSource.listUrl;
 const API_URL = wikibaseSource.apiUrl;
@@ -43,6 +44,14 @@ try {
     listGeneratedAt: list.generated,
     entities,
   };
+  // Venue labels for the timeline, kept apart so `entities` stays exhibitions only.
+  const locationProp = wikibaseSource.props.location;
+  if (locationProp) {
+    const locationIds = new Set(
+      Object.values(entities).flatMap((e) => claimValues(e, locationProp).map((v) => v.id)),
+    );
+    snapshot.locations = await fetchEntities([...locationIds]);
+  }
   await writeFile(OUT, JSON.stringify(snapshot));
   console.log(`${Object.keys(entities).length} entities`);
 } catch (err) {

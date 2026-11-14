@@ -64,7 +64,7 @@ export function titleMatch(a, b) {
   return [...keys(a)].some((k) => bKeys.has(k)) ? "main" : null;
 }
 
-function claimValues(entity, property) {
+export function claimValues(entity, property) {
   return (entity.claims?.[property] ?? [])
     .filter((s) => s.rank !== "deprecated" && s.mainsnak?.snaktype === "value")
     .map((s) => s.mainsnak.datavalue.value);

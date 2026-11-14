@@ -1,0 +1,390 @@
+{
+ "entities": {
+  "Q501": {
+   "type": "item",
+   "id": "Q501",
+   "labels": {
+    "de": {
+     "language": "de",
+     "value": "Ausstellung A"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P23": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+1998-03-01T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P24": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2001-06-30T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q502": {
+   "type": "item",
+   "id": "Q502",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Year Only"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q1100"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P23": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2005-00-00T00:00:00Z",
+         "precision": 9
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q503": {
+   "type": "item",
+   "id": "Q503",
+   "labels": {
+    "fr": {
+     "language": "fr",
+     "value": "Fin seule"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P24": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2010-05-00T00:00:00Z",
+         "precision": 10
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q504": {
+   "type": "item",
+   "id": "Q504",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Inverted"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P23": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2003-01-01T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P24": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2002-01-01T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q505": {
+   "type": "item",
+   "id": "Q505",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Linked"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P69": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": "Q999"
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q506": {
+   "type": "item",
+   "id": "Q506",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Venue-ish"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q9"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q507": {
+   "type": "item",
+   "id": "Q507",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "No date"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q508": {
+   "type": "item",
+   "id": "Q508",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Abroad"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P23": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2000-01-01T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P90": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q77"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  },
+  "Q509": {
+   "type": "item",
+   "id": "Q509",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "At venue"
+    }
+   },
+   "claims": {
+    "P2": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q20"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P23": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "time": "+2000-01-01T00:00:00Z",
+         "precision": 11
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ],
+    "P91": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "datavalue": {
+        "value": {
+         "id": "Q600"
+        }
+       }
+      },
+      "rank": "normal"
+     }
+    ]
+   }
+  }
+ },
+ "locations": {
+  "Q600": {
+   "type": "item",
+   "id": "Q600",
+   "labels": {
+    "en": {
+     "language": "en",
+     "value": "Kunsthaus"
+    }
+   }
+  }
+ }
+}

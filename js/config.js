@@ -38,11 +38,15 @@ export const wikibaseSource = {
   apiUrl: `${wikibaseBase}/w/api.php`,
   listUrl: `${wikibaseBase}/tools/exhibitions/api/list.php`,
   itemUrl: (id) => `${wikibaseBase}/wiki/Item:${encodeURIComponent(id)}`,
+  exhibitionClasses: ["Q20", "Q21", "Q1100"], // exhibition, art exhibition, temporary exhibition
+  switzerland: null, // not in the schema yet
   props: {
     instanceOf: "P2",
     title: "P4",
     start: "P23",
     end: "P24",
     wikidataItem: "P69",
+    country: null, // planned, like Wikidata's P17
+    location: null, // planned, like Wikidata's P276
   },
 };
