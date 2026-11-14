@@ -128,3 +128,9 @@ test("wikidataExhibitions: venue ids become names, items link to Wikidata", () =
   assert.equal(q2.url, activeProfile.itemUrl("Q2"));
   assert.equal(q2.startYear, 2005);
 });
+
+test("buckets: implausible years count as undated instead of stretching the axis", () => {
+  const r = yearBuckets([wd("Q1", 2000, 2000), wd("Q2", 2000, 100000000), wb("Q3", -5000, 2000)]);
+  assert.deepEqual(r.years.map((y) => y.year), [2000]);
+  assert.deepEqual(r.undated, { wikidata: 1, wikibase: 1 });
+});

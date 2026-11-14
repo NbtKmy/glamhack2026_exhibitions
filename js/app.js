@@ -4,29 +4,13 @@ import { activeProfile } from "./config.js";
 import { normalize } from "./normalize.js";
 import { normalizeRange, venueCounts, venueListing, countInRange } from "./filter.js";
 import { fetchAll, timeoutFetch } from "./queries.js";
+import { el, langTag } from "./dom.js";
 
 const COLOR_ACTIVE = "#c2410c";
 const COLOR_IDLE = "#9ca3af";
 const LIVE_TIMEOUT_MS = 60_000;
 
 const $ = (id) => document.getElementById(id);
-
-function el(tag, attrs = {}, ...children) {
-  const node = document.createElement(tag);
-  for (const [key, value] of Object.entries(attrs)) {
-    if (key === "className") node.className = value;
-    else node.setAttribute(key, value);
-  }
-  for (const child of children) {
-    if (child === null || child === undefined) continue;
-    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
-  }
-  return node;
-}
-
-function langTag(lang) {
-  return lang ? el("span", { className: "lang" }, lang) : el("span", { className: "lang none" }, "no label");
-}
 
 const map = L.map("map").setView([46.8, 8.2], 8);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {

@@ -101,13 +101,18 @@ export function mergeSources(wikidata, wikibase) {
 
 const byStartThenTitle = (a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title);
 
+// Anyone can edit Wikidata: one wrong year must not stretch the axis to
+// millions of years. Such exhibitions are counted as undated.
+const MIN_YEAR = 1000;
+const plausible = (year) => year !== null && year >= MIN_YEAR && year <= new Date().getUTCFullYear() + 10;
+
 // Every year from the first start to the last end, empty years included.
 // An exhibition is listed in each year it was running.
 export function yearBuckets(exhibitions) {
   const undated = { wikidata: 0, wikibase: 0 };
   const dated = [];
   for (const e of exhibitions) {
-    if (e.startYear === null) undated[e.source] += 1;
+    if (!plausible(e.startYear) || !plausible(e.endYear)) undated[e.source] += 1;
     else dated.push(e);
   }
   if (dated.length === 0) return { years: [], undated };

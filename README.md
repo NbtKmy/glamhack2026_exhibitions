@@ -10,6 +10,23 @@ links to Wikidata. The bar at the bottom shows what is missing in the data:
 exhibitions without dates, without an English label, without a Swiss venue,
 and venues without coordinates.
 
+## Timeline
+
+`timeline.html` shows how many exhibitions are recorded for each year, counted
+in every year they were running (an exhibition from 1998 to 2001 counts in all
+four years). Click a bar to list that year's exhibitions. Exhibitions without
+dates, or with implausible years (before 1000 or more than ten years ahead),
+are only counted below the chart.
+
+Wikidata exhibitions are shown in orange, exhibitions from the hackathon
+Wikibase in blue. Where an exhibition is in Wikidata, the Wikidata record is
+used: a Wikibase item with a Wikidata link (P69) is never counted from the
+Wikibase side. If its Wikidata item is not in the Swiss snapshot, it is left
+out entirely. The Wikibase snapshot (`data/wikibase-snapshot.json`) is
+optional; without it the page shows Wikidata only. Once the Wikibase has
+country and location properties, set their IDs and the Swiss item in
+`wikibaseSource` in `js/config.js`.
+
 ## Data
 
 Exhibitions are items that are an instance of (a subclass of) *exhibition*
